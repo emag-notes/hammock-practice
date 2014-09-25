@@ -11,6 +11,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.Set;
 
 /**
@@ -33,8 +34,14 @@ public class GreetingResource {
   @GET
   @Path("/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Greeting getById(@PathParam("id") int id) {
-    return repository.findById(id);
+  public Response getById(@PathParam("id") int id) {
+    Greeting greeting = repository.findById(id);
+
+    if(greeting == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    return Response.ok(greeting, MediaType.APPLICATION_JSON).build();
   }
 
   @GET
