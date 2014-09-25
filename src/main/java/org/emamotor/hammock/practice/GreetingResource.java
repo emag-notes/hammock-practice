@@ -8,9 +8,9 @@ import javax.ws.rs.Produces;
 /**
  * @author tanabe
  */
-@Path("/echo")
+@Path("/greeting")
 @RequestScoped
-public class EchoResource {
+public class GreetingResource {
 
   @GET
   @Produces("text/plain")

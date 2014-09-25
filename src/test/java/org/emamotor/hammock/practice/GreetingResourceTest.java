@@ -19,11 +19,11 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
-public class EchoResourceTest {
+public class GreetingResourceTest {
 
   @Deployment
   public static JavaArchive createArchive() {
-    return ShrinkWrap.create(JavaArchive.class, EchoResourceTest.class.getSimpleName() + ".jar")
+    return ShrinkWrap.create(JavaArchive.class, GreetingResourceTest.class.getSimpleName() + ".jar")
       .addPackages(true, WebServerLauncher.class.getPackage())
       .addAsManifestResource(new StringAsset("ws.ament.hammock.core.impl.ClassScannerExtension\n" +
         "org.jboss.resteasy.cdi.ResteasyCdiExtension"),"services/javax.enterprise.inject.spi.Extension")
@@ -34,7 +34,7 @@ public class EchoResourceTest {
         "\t\thttp://xmlns.jcp.org/xml/ns/javaee/beans_1_1.xsd\"\n" +
         "       bean-discovery-mode=\"all\">\n" +
         "</beans>"),"beans.xml")
-      .addClasses(TestConfigBean.class, EchoResource.class);
+      .addClasses(TestConfigBean.class, GreetingResource.class);
   }
 
   @Inject
@@ -42,10 +42,10 @@ public class EchoResourceTest {
   private TestConfigBean config;
 
   @Test
-  public void testEcho() throws InterruptedException {
+  public void greeting() throws InterruptedException {
     CDI.current().getBeanManager().fireEvent(new ContainerInitialized());
     String value = ClientBuilder.newClient()
-                      .target("http://localhost:" + config.getPort()).path("/api/echo")
+                      .target("http://localhost:" + config.getPort()).path("/api/greeting")
                       .request().get(String.class);
     assertThat(value, is("hello"));
   }
