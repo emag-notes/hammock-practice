@@ -1,5 +1,6 @@
-package org.emamotor.hammock.practice;
+package org.emamotor.hammock.practice.api;
 
+import org.emamotor.hammock.practice.TestConfigBean;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;

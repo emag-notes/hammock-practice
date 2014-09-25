@@ -1,4 +1,4 @@
-package org.emamotor.hammock.practice;
+package org.emamotor.hammock.practice.api;
 
 import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.GET;
