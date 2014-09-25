@@ -1,15 +1,14 @@
 package org.emamotor.hammock.practice.api;
 
 import org.emamotor.hammock.practice.TestConfigBean;
+import org.emamotor.hammock.practice.model.Greeting;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.weld.environment.se.events.ContainerInitialized;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import ws.ament.hammock.core.WebServerLauncher;
 import ws.ament.hammock.core.annotations.ApplicationConfig;
 
 import javax.enterprise.inject.spi.CDI;
@@ -24,31 +23,61 @@ public class GreetingResourceTest {
 
   @Deployment
   public static JavaArchive createArchive() {
-    return ShrinkWrap.create(JavaArchive.class, GreetingResourceTest.class.getSimpleName() + ".jar")
-      .addPackages(true, WebServerLauncher.class.getPackage())
-      .addAsManifestResource(new StringAsset("ws.ament.hammock.core.impl.ClassScannerExtension\n" +
-        "org.jboss.resteasy.cdi.ResteasyCdiExtension"),"services/javax.enterprise.inject.spi.Extension")
-      .addAsManifestResource(new StringAsset("\n" +
-        "<beans xmlns=\"http://xmlns.jcp.org/xml/ns/javaee\"\n" +
-        "       xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-        "       xsi:schemaLocation=\"http://xmlns.jcp.org/xml/ns/javaee\n" +
-        "\t\thttp://xmlns.jcp.org/xml/ns/javaee/beans_1_1.xsd\"\n" +
-        "       bean-discovery-mode=\"all\">\n" +
-        "</beans>"),"beans.xml")
-      .addClasses(TestConfigBean.class, GreetingResource.class);
+    return HammockPracticeDeployment.deployment();
   }
 
   @Inject
   @ApplicationConfig
   private TestConfigBean config;
 
-  @Test
-  public void greeting() throws InterruptedException {
+  @Before
+  public void setUp() throws Exception {
     CDI.current().getBeanManager().fireEvent(new ContainerInitialized());
+  }
+
+  @Test
+  public void echo() throws Exception {
+    String message = "Hammock";
     String value = ClientBuilder.newClient()
-                      .target("http://localhost:" + config.getPort()).path("/api/greeting")
-                      .request().get(String.class);
-    assertThat(value, is("hello"));
+      .target("http://" + config.getBindAddress() + ":" + config.getPort()).path(config.getContextRoot() + "/greetings/echo")
+      .queryParam("message", message)
+      .request().get(String.class);
+    assertThat(value, is("Hi, " + message));
+  }
+
+  @Test
+  public void hello() throws Exception {
+    Greeting hello = new Greeting(2, "Hello", "こんにちは");
+
+    Greeting value = ClientBuilder.newClient()
+      .target("http://" + config.getBindAddress() + ":" + config.getPort()).path(config.getContextRoot() + "/greetings/2")
+      .request().get(Greeting.class);
+    assertThat(value, is(hello));
+  }
+
+  @Test
+  public void all_greetings() throws Exception {
+    String value = ClientBuilder.newClient()
+      .target("http://" + config.getBindAddress() + ":" + config.getPort()).path(config.getContextRoot() + "/greetings/")
+      .request().get(String.class);
+    assertThat(value, is(
+      "[" +
+        "{" +
+        "\"id\":1," +
+        "\"english\":\"Good Morning\"," +
+        "\"japanese\":\"おはよう\"" +
+        "}," +
+        "{" +
+        "\"id\":2," +
+        "\"english\":\"Hello\"," +
+        "\"japanese\":\"こんにちは\"" +
+        "}," +
+        "{" +
+        "\"id\":3," +
+        "\"english\":\"Good Evening\"," +
+        "\"japanese\":\"こんばんは\"" +
+        "}" +
+      "]"));
   }
 
 }

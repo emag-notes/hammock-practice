@@ -12,6 +12,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <version.resteasy>3.0.6.Final</version.resteasy>
   </properties>
 
   <dependencies>
@@ -19,6 +20,11 @@
       <groupId>ws.ament.hammock</groupId>
       <artifactId>hammock-core</artifactId>
       <version>0.0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jackson-provider</artifactId>
+      <version>${version.resteasy}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -41,7 +47,7 @@
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-client</artifactId>
-      <version>3.0.6.Final</version>
+      <version>${version.resteasy}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
